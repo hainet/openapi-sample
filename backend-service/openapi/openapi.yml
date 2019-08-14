@@ -1,0 +1,137 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Backend Service API
+  description: リソースをDBで管理します。
+
+servers:
+  - url: https://localhost:8081
+
+paths:
+  /resources:
+    get:
+      description: リソースの一覧を取得します。
+      responses:
+        '200':
+          description: 正常に取得できた場合。
+          content:
+            application/json;charset=utf-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+              example:
+                - id: 1
+                  name: hainet
+                - id: 2
+                  name: kujaku
+
+    post:
+      description: リソースを登録します。
+      requestBody:
+        required: true
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/Resource'
+            example:
+              name: hainet
+      responses:
+        '201':
+          description: 正常に登録できた場合。
+          headers:
+            Location:
+              $ref: '#/components/headers/Location'
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Resource'
+              example:
+                id: 1
+                name: hainet
+
+  /resources/{id}:
+    get:
+      description: 指定したリソースを取得します。
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: 正常に取得できた場合。
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Resource'
+              example:
+                id: 1
+                name: hainet
+
+    put:
+      description: 指定したリソースを更新します。
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json;charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/Resource'
+            example:
+              name: hainet
+      responses:
+        '201':
+          description: 新規にリソースが登録された場合。
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Resource'
+              example:
+                id: 1
+                name: hainet
+        '204':
+          description: 正常に更新できた場合。
+
+    delete:
+      description: 指定したリソースを削除します。
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: 正常に削除できた場合。
+
+components:
+  schemas:
+    Resource:
+      description: リソースを示します。
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Message:
+      description: 操作の結果を示します。
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+
+  headers:
+    Location:
+      description: 登録されたリソースの場所を示します。
+      schema:
+        type: string
+
+  parameters:
+    Id:
+      description: リソースのIDを指定します。
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      example: 1
